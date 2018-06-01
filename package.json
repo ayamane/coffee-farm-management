@@ -1,0 +1,25 @@
+{
+  "name": "coffee-farm-management",
+  "version": "1.0.0",
+  "description": "Application to maintain data collected during coffee farm management",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "export NODE_ENV=test && mocha server/**/*.test.js",
+    "test-watch": "nodemon --exec 'npm test'"
+  },
+  "author": "Andrew Yamane",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongodb": "^3.1.0-beta4",
+    "mongoose": "^5.1.2",
+    "morgan": "^1.9.0"
+  },
+  "devDependencies": {
+    "expect": "^23.0.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.5",
+    "supertest": "^3.1.0"
+  }
+}
