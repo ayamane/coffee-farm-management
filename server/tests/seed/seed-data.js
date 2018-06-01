@@ -1,11 +1,37 @@
 const { ObjectID } = require('mongodb');
+//const jwt = require('jsonwebtoken');
 
+const { User } = require('./../../models/user');
 const { Farm } = require('./../../models/farm');
 const { Rain } = require('./../../models/rain');
 
-var farmOneId = new ObjectID();
-var farmTwoId = new ObjectID();
-var rainOneId = new ObjectID();
+const userOneId = new ObjectID();
+const userTwoId = new ObjectID();
+const farmOneId = new ObjectID();
+const farmTwoId = new ObjectID();
+const rainOneId = new ObjectID();
+
+const users = [{
+  _id: userOneId,
+  firstName: 'Andrew',
+  lastName: 'Tester',
+  email: 'andrew@example.com',
+  password: 'userOnePass'
+  /*tokens: [{
+    access: 'auth',
+    token: jwt.sign({_id: userOneId, access: 'auth'}, process.env.JWT_SECRET).toString()
+  }]*/
+}, {
+  _id: userTwoId,
+  firstName: 'John',
+  lastName: 'Tester',
+  email: 'john@example.com',
+  password: 'userTwoPass'
+  /*tokens: [{
+    access: 'auth',
+    token: jwt.sign({_id: userTwoId, access: 'auth'}, process.env.JWT_SECRET).toString()
+  }]*/
+}];
 
 const farms = [{
   _id: farmOneId,
@@ -53,6 +79,15 @@ const rain = [
   }
 ];
 
+const populateUsers = (done) => {
+  User.remove({}).then(() => {
+    var userOne = new User(users[0]).save();
+    var userTwo = new User(users[1]).save();
+
+    return Promise.all([userOne, userTwo])
+  }).then(() => done());
+};
+
 const populateFarms = (done) => {
   Farm.remove({}).then(() => {
     return Farm.insertMany(farms);
@@ -66,6 +101,8 @@ const populateRain = (done) => {
 };
 
 module.exports = {
+  users,
+  populateUsers,
   farms,
   populateFarms,
   rain,

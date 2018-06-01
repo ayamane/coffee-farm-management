@@ -7,10 +7,82 @@ const {ObjectID} = require('mongodb');
 const {app} = require('./../server');
 const {Farm} = require('./../models/farm');
 const {Rain} = require('./../models/rain');
-const {farms, populateFarms, rain, populateRain} = require('./seed/seed-data');
+const {User} = require('./../models/user');
+const {users, populateUsers, farms, populateFarms, rain, populateRain} = require('./seed/seed-data');
 
+beforeEach(populateUsers);
 beforeEach(populateFarms);
 beforeEach(populateRain);
+
+describe('*********** USERS ***********', () => {
+  describe('POST /users', () => {
+    it('should create a user', (done) => {
+      var firstName = 'Andrew';
+      var lastName = 'Example';
+      var email = 'example2@example.com';
+      var password = '123mnb!';
+
+      request(app)
+        .post('/users')
+        .send({
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password
+        })
+        .expect(201)
+        .expect((res) => {
+          //expect(res.headers['x-auth']).toBeTruthy();
+          expect(res.body.obj._id).toBeTruthy();
+          expect(res.body.obj.email).toBe(email);
+        })
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+
+          User.findOne({email}).then((user) => {
+            expect(user).toBeTruthy();
+            expect(user.firstName).toBe(firstName);
+            expect(user.password).not.toBe(password);
+            done();
+          }).catch((e) => done(e));
+        });
+    });
+
+    it('should return validation errors if request invalid', (done) => {
+      var invalidEmail = 'abc';
+      var invalidPassword = '456';
+
+      request(app)
+        .post('/users')
+        .send({invalidEmail, invalidPassword})
+        .expect(500)
+        .expect((res) => {
+          expect(res.body.title).toEqual('An error occurred');
+          expect(res.body.error.name).toEqual('ValidationError');
+          expect(res.body.error._message).toEqual('User validation failed');
+        })
+        .end(done);
+    });
+
+    it('should not create user if email in use', (done) => {
+      var inUseEmail = 'andrew@example.com';
+      var validPassword = '456abc!';
+
+      request(app)
+        .post('/users')
+        .send({inUseEmail, validPassword})
+        .expect(500)
+        .expect((res) => {
+          expect(res.body.title).toEqual('An error occurred');
+          expect(res.body.error.name).toEqual('ValidationError');
+          expect(res.body.error._message).toEqual('User validation failed');
+        })
+        .end(done);
+    });
+  });
+});
 
 describe('*********** FARMS ***********', () => {
   describe('GET /farms', () => {
@@ -19,11 +91,12 @@ describe('*********** FARMS ***********', () => {
         .get('/farms')
         .expect(200)
         .expect((res) => {
-          expect(res.body.farms.length).toBe(2);
+          expect(res.body.obj.length).toBe(2);
         })
         .end(done);
     });
   });
+
   describe('POST /farms', () => {
     it('should create a new farm', (done) => {
       var name = 'Test the farm name';
@@ -31,9 +104,9 @@ describe('*********** FARMS ***********', () => {
       request(app)
         .post('/farms')
         .send({name})
-        .expect(200)
+        .expect(201)
         .expect((res) => {
-          expect(res.body.name).toBe(name);
+          expect(res.body.obj.name).toBe(name);
         })
         .end((err, res) => {
           if (err) {
@@ -52,7 +125,7 @@ describe('*********** FARMS ***********', () => {
       request(app)
         .post('/farms')
         .send({})
-        .expect(400)
+        .expect(500)
         .end((err, res) => {
           if (err) {
             return done(err);
@@ -70,7 +143,7 @@ describe('*********** FARMS ***********', () => {
       request(app)
         .post('/farms')
         .send({name})
-        .expect(400)
+        .expect(500)
         .end((err, res) => {
           if (err) {
             return done(err);
@@ -88,7 +161,7 @@ describe('*********** FARMS ***********', () => {
       request(app)
         .post('/farms')
         .send({name})
-        .expect(400)
+        .expect(500)
         .end((err, res) => {
           if (err) {
             return done(err);
@@ -107,9 +180,9 @@ describe('*********** FARMS ***********', () => {
       request(app)
         .post('/farms')
         .send({name})
-        .expect(200)
+        .expect(201)
         .expect((res) => {
-          expect(res.body.name).toBe(name.trim());
+          expect(res.body.obj.name).toBe(name.trim());
         })
         .end((err, res) => {
           if (err) {
@@ -131,7 +204,7 @@ describe('*********** FARMS ***********', () => {
         .get(`/farms/${farms[0]._id.toHexString()}`)
         .expect(200)
         .expect((res) => {
-          expect(res.body.farm.name).toBe(farms[0].name);
+          expect(res.body.obj.name).toBe(farms[0].name);
         })
         .end(done);
     });
@@ -178,11 +251,11 @@ describe('*********** RAIN  ***********', () => {
           amount: 8.1,
           dimension: 'cm'
         })
-        .expect(200)
+        .expect(201)
         .expect((res) => {
-          expect(res.body.amount).toBe(8.1);
-          expect(res.body.dimension).toBe('cm');
-          expect(new Date(res.body.date)).toEqual(date);
+          expect(res.body.obj.amount).toBe(8.1);
+          expect(res.body.obj.dimension).toBe('cm');
+          expect(new Date(res.body.obj.date)).toEqual(date);
         })
         .end((err, res) => {
           if (err) {
@@ -203,7 +276,7 @@ describe('*********** RAIN  ***********', () => {
         .get(`/rain/${rain[0]._id.toHexString()}`)
         .expect(200)
         .expect((res) => {
-          expect(res.body.rain.amount).toBe(1.2);
+          expect(res.body.obj.amount).toBe(1.2);
         })
         .end(done);
     });

@@ -8,7 +8,8 @@ var Rain = mongoose.model('Rain', {
   },
   date: {
     type: Date,
-    required: true
+    required: true,
+    default: Date.now
   },
   amount: {
     type: Number,

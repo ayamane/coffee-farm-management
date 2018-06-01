@@ -11,9 +11,13 @@
   "author": "Andrew Yamane",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^2.0.1",
+    "bcryptjs": "^2.4.3",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.2.2",
     "mongodb": "^3.1.0-beta4",
     "mongoose": "^5.1.2",
+    "mongoose-unique-validator": "^2.0.1",
     "morgan": "^1.9.0"
   },
   "devDependencies": {
