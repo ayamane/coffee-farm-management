@@ -4,10 +4,10 @@ const expect = require('expect');
 const request = require('supertest');
 const {ObjectID} = require('mongodb');
 
-const {app} = require('./../server');
-const {Farm} = require('./../models/farm');
-const {Rain} = require('./../models/rain');
-const {User} = require('./../models/user');
+const app = require('./../server');
+const Farm = require('./../models/farm');
+const Rain = require('./../models/rain');
+const User = require('./../models/user');
 const {users, populateUsers, farms, populateFarms, rain, populateRain} = require('./seed/seed-data');
 
 beforeEach(populateUsers);
@@ -32,7 +32,6 @@ describe('*********** USERS ***********', () => {
         })
         .expect(201)
         .expect((res) => {
-          //expect(res.headers['x-auth']).toBeTruthy();
           expect(res.body.obj._id).toBeTruthy();
           expect(res.body.obj.email).toBe(email);
         })
@@ -218,10 +217,10 @@ describe('*********** FARMS ***********', () => {
         .end(done);
     });
 
-    it('should return 404 for non-object ids', (done) => {
+    it('should return 500 for non-object ids', (done) => {
       request(app)
         .get('/farms/123')
-        .expect(404)
+        .expect(500)
         .end(done);
     });
   });
@@ -234,7 +233,7 @@ describe('*********** RAIN  ***********', () => {
         .get('/rain')
         .expect(200)
         .expect((res) => {
-          expect(res.body.rain.length).toBe(5);
+          expect(res.body.obj.length).toBe(5);
         })
         .end(done);
     });
@@ -282,7 +281,7 @@ describe('*********** RAIN  ***********', () => {
     });
 
     it('should return 404 if rain document not found', (done) => {
-      var id = new ObjectID().toHexString();
+      var id = farms[0]._id.toHexString();
 
       request(app)
         .get(`/rain/${id}`)
@@ -290,10 +289,10 @@ describe('*********** RAIN  ***********', () => {
         .end(done);
     });
 
-    it('should return 404 for non-object ids', (done) => {
+    it('should return 500 for non-object ids', (done) => {
       request(app)
         .get('/rain/123')
-        .expect(404)
+        .expect(500)
         .end(done);
     });
   });
@@ -304,11 +303,11 @@ describe('*********** RAIN  ***********', () => {
         .get(`/rain/farm/${farms[0]._id.toHexString()}`)
         .expect(200)
         .expect((res) => {
-          expect(res.body.rain.length).toBe(3);
-          expect(res.body.rain[0].amount).toBe(1.2);
-          expect(res.body.rain[0].dimension).toBe('cm');
-          expect(res.body.rain[2].amount).toBe(2.3);
-          expect(res.body.rain[2].dimension).toBe('cm');
+          expect(res.body.obj.length).toBe(3);
+          expect(res.body.obj[0].amount).toBe(1.2);
+          expect(res.body.obj[0].dimension).toBe('cm');
+          expect(res.body.obj[2].amount).toBe(2.3);
+          expect(res.body.obj[2].dimension).toBe('cm');
         })
         .end(done);
     });

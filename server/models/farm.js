@@ -31,4 +31,4 @@ var Farm = mongoose.model('Farm', {
   }
 });
 
-module.exports = {Farm};
+module.exports = Farm;

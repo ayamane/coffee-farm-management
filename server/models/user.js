@@ -66,4 +66,4 @@ User.schema.pre('save', function(next) {
   }
 });
 
-module.exports = { User };
+module.exports = User;

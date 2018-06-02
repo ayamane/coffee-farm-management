@@ -8,7 +8,7 @@
     "test": "export NODE_ENV=test && mocha server/**/*.test.js",
     "test-watch": "nodemon --exec 'npm test'"
   },
-  "author": "Andrew Yamane",
+  "author": "Andrew Yamane, ANKK Ohana Farms",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^2.0.1",

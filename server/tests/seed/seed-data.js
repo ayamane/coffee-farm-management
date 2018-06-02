@@ -1,9 +1,9 @@
 const { ObjectID } = require('mongodb');
 //const jwt = require('jsonwebtoken');
 
-const { User } = require('./../../models/user');
-const { Farm } = require('./../../models/farm');
-const { Rain } = require('./../../models/rain');
+const User = require('./../../models/user');
+const Farm = require('./../../models/farm');
+const Rain = require('./../../models/rain');
 
 const userOneId = new ObjectID();
 const userTwoId = new ObjectID();
@@ -90,13 +90,22 @@ const populateUsers = (done) => {
 
 const populateFarms = (done) => {
   Farm.remove({}).then(() => {
-    return Farm.insertMany(farms);
+    var farmOne = new Farm(farms[0]).save();
+    var farmTwo = new Farm(farms[1]).save();
+
+    return Promise.all([farmOne, farmTwo]);
   }).then(() => done());
 };
 
 const populateRain = (done) => {
   Rain.remove({}).then(() => {
-    return Rain.insertMany(rain);
+    var rainOne = new Rain(rain[0]).save();
+    var rainTwo = new Rain(rain[1]).save();
+    var rainThree = new Rain(rain[2]).save();
+    var rainFour = new Rain(rain[3]).save();
+    var rainFive = new Rain(rain[4]).save();
+
+    return Promise.all([rainOne, rainTwo, rainThree, rainFour, rainFive]);
   }).then(() => done());
 };
 

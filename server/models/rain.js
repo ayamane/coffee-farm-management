@@ -25,4 +25,4 @@ var Rain = mongoose.model('Rain', {
   }
 });
 
-module.exports = { Rain };
+module.exports = Rain;
